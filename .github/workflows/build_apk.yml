@@ -32,6 +32,8 @@ jobs:
 
       - name: Build web assets
         run: npm run build
+        env:
+          VITE_API_URL: https://deen-path.onrender.com
 
       - name: Install Capacitor CLI and Android platform
         run: |

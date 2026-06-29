@@ -6,6 +6,8 @@ import {
 import { motion } from 'motion/react';
 import { hapticLight, hapticMedium } from '../utils/haptics';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 interface SettingsProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
@@ -89,7 +91,7 @@ export default function Settings({
   const triggerAutoSyncSettings = async (nameToSync = userName, alertsToSync = notifications) => {
     if (!user) return;
     try {
-      await fetch(`/api/sync/settings/${user.id}`, {
+      await fetch(`${API_BASE}/api/sync/settings/${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -119,7 +121,7 @@ export default function Settings({
     setAuthSuccess(null);
     setAuthLoading(true);
 
-    const url = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+    const url = isRegisterMode ? `${API_BASE}/api/auth/register` : `${API_BASE}/api/auth/login`;
     const body = isRegisterMode 
       ? { email: authEmail, name: authName || 'Deen Pilgrim', password: authPassword }
       : { email: authEmail, password: authPassword };
@@ -174,7 +176,7 @@ export default function Settings({
 
     try {
       // 1. Upload bookmarks to database
-      const bRes = await fetch(`/api/sync/bookmarks/${user.id}`, {
+      const bRes = await fetch(`${API_BASE}/api/sync/bookmarks/${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bookmarks })
@@ -185,7 +187,7 @@ export default function Settings({
       }
 
       // 2. Upload settings to database
-      const sRes = await fetch(`/api/sync/settings/${user.id}`, {
+      const sRes = await fetch(`${API_BASE}/api/sync/settings/${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -215,7 +217,7 @@ export default function Settings({
   const fetchCloudData = async (userId: number) => {
     try {
       // Fetch Bookmarks
-      const bRes = await fetch(`/api/sync/bookmarks/${userId}`);
+      const bRes = await fetch(`${API_BASE}/api/sync/bookmarks/${userId}`);
       if (bRes.ok) {
         const cloudBookmarks = await bRes.json();
         if (cloudBookmarks && cloudBookmarks.length > 0) {
@@ -224,7 +226,7 @@ export default function Settings({
       }
 
       // Fetch Settings
-      const sRes = await fetch(`/api/sync/settings/${userId}`);
+      const sRes = await fetch(`${API_BASE}/api/sync/settings/${userId}`);
       if (sRes.ok) {
         const cloudSettings = await sRes.json();
         setFontSizeScale(cloudSettings.font_size_scale || 'standard');

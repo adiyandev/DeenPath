@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { UserPlus, Shield, Lock, ArrowRight, Loader2, Key } from 'lucide-react';
 import { motion } from 'motion/react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 interface OnboardingProps {
   onSuccess: (user: any) => void;
   onDevMode: () => void;
@@ -42,7 +44,7 @@ export default function Onboarding({ onSuccess, onDevMode }: OnboardingProps) {
     setError(null);
     setLoading(true);
 
-    const url = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+    const url = isRegisterMode ? `${API_BASE}/api/auth/register` : `${API_BASE}/api/auth/login`;
     const body = isRegisterMode 
       ? { email, name: name || 'Believer', password }
       : { email, password };
