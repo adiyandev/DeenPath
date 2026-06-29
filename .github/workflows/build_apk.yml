@@ -33,12 +33,11 @@ jobs:
       - name: Build web assets
         run: npm run build
 
-      - name: Add Android platform (Capacitor)
-        run: |
-          npx cap add android || echo "Android platform already added"
-          npx cap copy android
-      - name: Sync Android platform
-        run: npx cap sync android
+- name: Install Capacitor CLI and Android platform
+  run: |
+    npm install @capacitor/cli @capacitor/android
+    npx cap add android || echo "Android platform already added"
+    npx cap copy android
       - name: Build APK and AAB
         run: |
           cd android
