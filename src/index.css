@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', 'Noto Serif', Georgia, serif;
+  --font-arabic: 'Amiri', 'Noto Serif', serif;
+  
+  --color-primary: var(--primary-color);
+  --color-primary-light: var(--primary-light-color);
+  --color-primary-dark: var(--primary-dark-color);
+  --color-primary-container: var(--primary-container-color);
+  --color-gold: #C5A059;
+  --color-gold-light: #dfc28d;
+  --color-gold-dark: #916f31;
+  --color-gold-container: var(--gold-container-color);
+  --color-accent: #C5A059;
+  --color-bg-light: var(--bg-light-color);
+  --color-bg-dark: var(--bg-dark-color);
+}
+
+:root {
+  /* Royal Blue Theme (Default) */
+  --primary-color: #1E3A8A;
+  --primary-light-color: #3B82F6;
+  --primary-dark-color: #172554;
+  --primary-container-color: #EFF6FF;
+  --gold-container-color: #FAF8F2;
+  --bg-light-color: #F8FAFC;
+  --bg-dark-color: #0F172A;
+}
+
+.theme-green {
+  /* Traditional Emerald Green Theme */
+  --primary-color: #064E3B;
+  --primary-light-color: #10775c;
+  --primary-dark-color: #032b21;
+  --primary-container-color: #ecf5f2;
+  --gold-container-color: #faf6ee;
+  --bg-light-color: #FDFBF7;
+  --bg-dark-color: #0d1311;
+}
+
+/* Custom Utilities and Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.45); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 30s linear infinite;
+}
+
+/* Glassmorphism overlays */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .glass-panel {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Hide scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+

@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.deenpath",
+  "appName": "DeenPath",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

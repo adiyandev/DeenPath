@@ -1,0 +1,6 @@
+{
+  "name": "Deen Path",
+  "description": "An elegant, comprehensive Islamic companion app featuring prayer times, Quran reader with multiple recitations, Qibla compass, authentic Duas, and robust Postgres-backed sync.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
