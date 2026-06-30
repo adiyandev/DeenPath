@@ -17,7 +17,7 @@ const PORT = 3000;
 app.use(express.json());
 
 // Neon PostgreSQL Database Pool Initialization
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_2lQnNIUS1xam@ep-spring-shape-ad9780ty-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_2lQnNIUS1xam@ep-spring-shape-ad9780ty-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
 const pool = new pg.Pool({
   connectionString: DATABASE_URL,

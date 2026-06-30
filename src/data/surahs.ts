@@ -54,7 +54,7 @@ export const OFFLINE_SURAHS_DETAIL: Record<number, { surah: Surah; ayahs: Ayah[]
     ayahs: [
       { number: 1, numberInSurah: 1, text: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ", translation: "Say, \"I seek refuge in the Lord of mankind,", juz: 30 },
       { number: 2, numberInSurah: 2, text: "مَلِكِ النَّاسِ", translation: "The Sovereign of mankind,", juz: 30 },
-      { number: 3, numberInSurah: 3, text: "إِلَٰهِ النَّاسِ", translation: "The God of mankind,", juz: 30 },
+      { number: 3, numberInSurah: 3, text: "إِلَٰهِ النَّاسِ", translation: "The Allah of mankind,", juz: 30 },
       { number: 4, numberInSurah: 4, text: "مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", translation: "From the evil of the retreating whisperer -", juz: 30 },
       { number: 5, numberInSurah: 5, text: "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", translation: "Who whispers [evil] into the breasts of mankind -", juz: 30 },
       { number: 6, numberInSurah: 6, text: "مِنَ الْجِنَّةِ وَالنَّاسِ", translation: "From among the jinn and mankind.\"", juz: 30 }

@@ -6,6 +6,7 @@ import { useTranslation } from './utils/i18n';
 import { hapticHeavy } from './utils/haptics';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import { Preferences } from '@capacitor/preferences';
 
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
@@ -91,9 +92,34 @@ export default function App() {
   useEffect(() => {
     async function loadData() {
       try {
+        if (Capacitor.isNativePlatform()) {
+          await LocalNotifications.requestPermissions();
+        } else if ('Notification' in window) {
+          await Notification.requestPermission();
+        }
+
+        if (!window.localStorage.getItem('prayer_alerts')) {
+          window.localStorage.setItem('prayer_alerts', JSON.stringify({ Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true }));
+        }
+
         const loc = await fetchUserLocation();
         const pTimes = await fetchPrayerTimes(loc.lat, loc.lng, loc.city);
         setPrayerData(pTimes);
+
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await Preferences.set({
+              key: 'widget_prayer_data',
+              value: JSON.stringify({
+                Fajr: pTimes.times.Fajr,
+                Dhuhr: pTimes.times.Dhuhr,
+                Asr: pTimes.times.Asr,
+                Maghrib: pTimes.times.Maghrib,
+                Isha: pTimes.times.Isha
+              })
+            });
+          } catch(e) { console.error('Prefs error', e) }
+        }
       } catch (err) {
         console.error('Error in App loading phase:', err);
       } finally {

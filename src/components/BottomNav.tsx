@@ -1,4 +1,4 @@
-import { Home, BookOpen, Heart, Settings, CircleDot } from 'lucide-react';
+import { Home, BookOpen, Heart, Settings, CircleDot, Compass } from 'lucide-react';
 import { motion } from 'motion/react';
 import { hapticLight } from '../utils/haptics';
 
@@ -12,6 +12,7 @@ export default function BottomNav({ currentScreen, setScreen }: BottomNavProps) 
     { id: 'home', label: 'Home', icon: Home },
     { id: 'quran-list', label: 'Quran', icon: BookOpen },
     { id: 'tasbih', label: 'Tasbih', icon: CircleDot },
+    { id: 'qibla', label: 'Qibla', icon: Compass },
     { id: 'duas', label: 'Duas', icon: Heart },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

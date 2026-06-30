@@ -30,7 +30,9 @@ export default function Qibla() {
       }
     };
 
-    if (window.DeviceOrientationEvent) {
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation as any);
+    } else if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleOrientation);
     } else {
       setPermissionState('unsupported');
