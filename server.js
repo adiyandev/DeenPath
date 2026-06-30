@@ -32,6 +32,11 @@ async function setupDatabase() {
       );
     `);
     await client.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS reset_otp VARCHAR(10),
+      ADD COLUMN IF NOT EXISTS reset_otp_expires TIMESTAMP;
+    `);
+    await client.query(`
       CREATE TABLE IF NOT EXISTS user_settings (
         user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
         dark_mode BOOLEAN DEFAULT FALSE,
@@ -113,6 +118,61 @@ app.post("/api/auth/login", async (req, res) => {
   } catch (err) {
     console.error("Error logging in:", err);
     res.status(500).json({ error: "Database error during login" });
+  }
+});
+app.post("/api/auth/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: "Missing email" });
+  try {
+    const userResult = await pool.query("SELECT id FROM users WHERE email = $1", [email.toLowerCase().trim()]);
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    const otp = Math.floor(1e5 + Math.random() * 9e5).toString();
+    const expires = new Date(Date.now() + 15 * 60 * 1e3);
+    await pool.query(
+      "UPDATE users SET reset_otp = $1, reset_otp_expires = $2 WHERE email = $3",
+      [otp, expires, email.toLowerCase().trim()]
+    );
+    console.log(`
+=== MOCK EMAIL ===
+To: ${email}
+Subject: Password Reset OTP
+Your OTP is: ${otp}
+==================
+`);
+    res.status(200).json({ message: "OTP sent successfully", mockOtp: otp });
+  } catch (err) {
+    console.error("Error generating OTP:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+app.post("/api/auth/reset-password", async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  if (!email || !otp || !newPassword) return res.status(400).json({ error: "Missing email, OTP, or new password" });
+  try {
+    const userResult = await pool.query(
+      "SELECT id, reset_otp, reset_otp_expires FROM users WHERE email = $1",
+      [email.toLowerCase().trim()]
+    );
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    const user = userResult.rows[0];
+    if (!user.reset_otp || user.reset_otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+    if (/* @__PURE__ */ new Date() > new Date(user.reset_otp_expires)) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+    await pool.query(
+      "UPDATE users SET password = $1, reset_otp = NULL, reset_otp_expires = NULL WHERE email = $2",
+      [newPassword, email.toLowerCase().trim()]
+    );
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    res.status(500).json({ error: "Database error" });
   }
 });
 app.get("/api/sync/settings/:userId", async (req, res) => {
