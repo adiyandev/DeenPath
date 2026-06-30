@@ -11,7 +11,7 @@ var __dirname = path.dirname(__filename);
 var app = express();
 var PORT = 3e3;
 app.use(express.json());
-var DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_2lQnNIUS1xam@ep-spring-shape-ad9780ty-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+var DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_2lQnNIUS1xam@ep-spring-shape-ad9780ty-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
 var pool = new pg.Pool({
   connectionString: DATABASE_URL,
   ssl: {
