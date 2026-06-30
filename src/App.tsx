@@ -31,7 +31,7 @@ export default function App() {
 
   // Persistent States
   const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>('app_dark_mode', false);
-  const [userName, setUserName] = useLocalStorage<string>('user_name', 'Zubair Ahmed');
+  const [userName, setUserName] = useLocalStorage<string>('user_name', '');
   const [fontSizeScale, setFontSizeScale] = useLocalStorage<'standard' | 'large' | 'xlarge'>('font_size_scale', 'standard');
   const [bookmarks, setBookmarks] = useLocalStorage<BookmarkType[]>('user_bookmarks', []);
   const [themeAccent, setThemeAccent] = useLocalStorage<'blue' | 'green'>('theme_accent', 'blue');
@@ -260,7 +260,7 @@ export default function App() {
   }
 
   if (!user && !isDevMode) {
-    return <Onboarding onSuccess={setUser} onDevMode={() => setIsDevMode(true)} />;
+    return <Onboarding onSuccess={(u) => { setUser(u); setUserName(u.name); }} onDevMode={() => setIsDevMode(true)} />;
   }
 
   return (
