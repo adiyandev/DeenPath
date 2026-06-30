@@ -78,6 +78,9 @@ export default function Quran({ bookmarks, toggleBookmark, selectedSurah, setSel
   const [playingAyahNumber, setPlayingAyahNumber] = useState<number | null>(null);
   const [audioState, setAudioState] = useState<'idle' | 'playing' | 'paused'>('idle');
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Keep a ref to ayahs so audio.onended always sees the latest list (avoids stale closure)
+  const ayahsRef = useRef<Ayah[]>([]);
+  useEffect(() => { ayahsRef.current = ayahs; }, [ayahs]);
 
   // Fetch surah list on mount
   useEffect(() => {
@@ -166,18 +169,12 @@ export default function Quran({ bookmarks, toggleBookmark, selectedSurah, setSel
 
     // Auto-advance or stop when audio ends
     audio.onended = () => {
-      // Re-query ayahs from state since closure might be stale (React setState dependency)
-      // Actually, ayahs is stable for the surah, but let's use a function to be safe if it were to change
       setPlayingAyahNumber((currentPlaying) => {
         if (currentPlaying === null) return null;
-        
-        // Find next ayah using the current ayahs array from the component scope
-        // Note: ayahs is set once on mount of surah detail, so the closure value is accurate.
-        const nextAyah = ayahs.find(a => a.numberInSurah === currentPlaying + 1);
+        const nextAyah = ayahsRef.current.find(a => a.numberInSurah === currentPlaying + 1);
         if (nextAyah) {
-          // Defer to next tick to allow state updates to settle before playing next
           setTimeout(() => playAyahAudio(nextAyah.numberInSurah), 50);
-          return currentPlaying; // Keep current until next starts, or just let playAyahAudio update it
+          return currentPlaying;
         } else {
           setAudioState('idle');
           return null;

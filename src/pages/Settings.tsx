@@ -108,7 +108,10 @@ export default function Settings({
           font_size_scale: fontSizeScale,
           theme_accent: themeAccent,
           notifications_fajr: alertsToSync.Fajr,
-          notifications_asr: alertsToSync.Asr
+          notifications_dhuhr: alertsToSync.Dhuhr,
+          notifications_asr: alertsToSync.Asr,
+          notifications_maghrib: alertsToSync.Maghrib,
+          notifications_isha: alertsToSync.Isha
         })
       });
     } catch (e) {
@@ -121,7 +124,8 @@ export default function Settings({
     if (user) {
       triggerAutoSyncSettings();
     }
-  }, [isDarkMode, fontSizeScale, themeAccent]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDarkMode, fontSizeScale, themeAccent, user]);
 
   // Auth Submit Handlers
   const handleAuthSubmit = async (e: FormEvent) => {
@@ -204,7 +208,10 @@ export default function Settings({
           font_size_scale: fontSizeScale,
           theme_accent: themeAccent,
           notifications_fajr: notifications.Fajr,
-          notifications_asr: notifications.Asr
+          notifications_dhuhr: notifications.Dhuhr,
+          notifications_asr: notifications.Asr,
+          notifications_maghrib: notifications.Maghrib,
+          notifications_isha: notifications.Isha
         })
       });
 
@@ -237,14 +244,15 @@ export default function Settings({
       // Fetch Settings
       const sRes = await fetch(`${API_BASE}/api/sync/settings/${userId}`);
       if (sRes.ok) {
-        const cloudSettings = await sRes.json();
-        setFontSizeScale(cloudSettings.font_size_scale || 'standard');
-        setThemeAccent(cloudSettings.theme_accent || 'blue');
-        // sync notifications object
+        const s = await sRes.json();
+        setFontSizeScale(s.font_size_scale || 'standard');
+        setThemeAccent(s.theme_accent || 'blue');
         const updatedNotifs = {
-          ...notifications,
-          Fajr: cloudSettings.notifications_fajr !== undefined ? cloudSettings.notifications_fajr : notifications.Fajr,
-          Asr: cloudSettings.notifications_asr !== undefined ? cloudSettings.notifications_asr : notifications.Asr
+          Fajr:    s.notifications_fajr    !== undefined ? s.notifications_fajr    : notifications.Fajr,
+          Dhuhr:   s.notifications_dhuhr   !== undefined ? s.notifications_dhuhr   : notifications.Dhuhr,
+          Asr:     s.notifications_asr     !== undefined ? s.notifications_asr     : notifications.Asr,
+          Maghrib: s.notifications_maghrib !== undefined ? s.notifications_maghrib : notifications.Maghrib,
+          Isha:    s.notifications_isha    !== undefined ? s.notifications_isha    : notifications.Isha,
         };
         setNotifications(updatedNotifs);
         window.localStorage.setItem('prayer_alerts', JSON.stringify(updatedNotifs));

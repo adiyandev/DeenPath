@@ -56,14 +56,16 @@ export async function fetchPrayerTimes(lat: number, lng: number, city: string = 
     const resJson = await response.json();
     if (resJson.code === 200 && resJson.data) {
       const data = resJson.data;
+      // AlAdhan sometimes returns times with timezone suffix e.g. "04:12 (WIB)" — strip to "HH:MM"
+      const t = (raw: string) => (raw || '').split(' ')[0].slice(0, 5);
       return {
         times: {
-          Fajr: data.timings.Fajr,
-          Sunrise: data.timings.Sunrise,
-          Dhuhr: data.timings.Dhuhr,
-          Asr: data.timings.Asr,
-          Maghrib: data.timings.Maghrib,
-          Isha: data.timings.Isha,
+          Fajr: t(data.timings.Fajr),
+          Sunrise: t(data.timings.Sunrise),
+          Dhuhr: t(data.timings.Dhuhr),
+          Asr: t(data.timings.Asr),
+          Maghrib: t(data.timings.Maghrib),
+          Isha: t(data.timings.Isha),
         },
         gregorian: {
           date: data.date.gregorian.date,

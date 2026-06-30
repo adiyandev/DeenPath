@@ -259,7 +259,7 @@ export default function Home({ prayerData, setScreen, bookmarks, toggleBookmark,
           </button>
 
           <button
-            onClick={() => setScreen('qibla')}
+            onClick={() => navigate('qibla')}
             className="flex flex-col items-center p-3 rounded-2xl bg-white dark:bg-[#0f1513] border border-slate-200/50 dark:border-zinc-900/50 shadow-sm transition-all active:scale-95 group"
           >
             <div className="w-10 h-10 rounded-full bg-[#ecf5f2] dark:bg-[#15231e] text-[#064E3B] dark:text-[#dfc28d] flex items-center justify-center mb-2 group-hover:bg-[#064E3B] group-hover:text-white dark:group-hover:text-white transition-colors duration-300">

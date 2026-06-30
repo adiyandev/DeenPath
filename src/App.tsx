@@ -106,16 +106,16 @@ export default function App() {
         const pTimes = await fetchPrayerTimes(loc.lat, loc.lng, loc.city);
         setPrayerData(pTimes);
 
-        if (Capacitor.isNativePlatform()) {
+        if (Capacitor.isNativePlatform() && Preferences) {
           try {
             await Preferences.set({
               key: 'widget_prayer_data',
               value: JSON.stringify({
-                Fajr: pTimes.times.Fajr,
-                Dhuhr: pTimes.times.Dhuhr,
-                Asr: pTimes.times.Asr,
-                Maghrib: pTimes.times.Maghrib,
-                Isha: pTimes.times.Isha
+                Fajr: pTimes.times.Fajr?.slice(0, 5),
+                Dhuhr: pTimes.times.Dhuhr?.slice(0, 5),
+                Asr: pTimes.times.Asr?.slice(0, 5),
+                Maghrib: pTimes.times.Maghrib?.slice(0, 5),
+                Isha: pTimes.times.Isha?.slice(0, 5)
               })
             });
           } catch(e) { console.error('Prefs error', e) }
@@ -144,11 +144,11 @@ export default function App() {
       const times = prayerData.times;
       // Sunrise is generally not called out for Adhan, but we can include it or skip it.
       const prayers = [
-        { name: 'Fajr', time: times.Fajr },
-        { name: 'Dhuhr', time: times.Dhuhr },
-        { name: 'Asr', time: times.Asr },
-        { name: 'Maghrib', time: times.Maghrib },
-        { name: 'Isha', time: times.Isha },
+        { name: 'Fajr', time: times.Fajr?.slice(0, 5) },
+        { name: 'Dhuhr', time: times.Dhuhr?.slice(0, 5) },
+        { name: 'Asr', time: times.Asr?.slice(0, 5) },
+        { name: 'Maghrib', time: times.Maghrib?.slice(0, 5) },
+        { name: 'Isha', time: times.Isha?.slice(0, 5) },
       ];
 
       const currentPrayer = prayers.find((p) => p.time === timeStr);

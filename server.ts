@@ -58,9 +58,20 @@ async function setupDatabase() {
         font_size_scale VARCHAR(20) DEFAULT 'standard',
         theme_accent VARCHAR(20) DEFAULT 'blue',
         notifications_fajr BOOLEAN DEFAULT TRUE,
+        notifications_dhuhr BOOLEAN DEFAULT TRUE,
         notifications_asr BOOLEAN DEFAULT TRUE,
+        notifications_maghrib BOOLEAN DEFAULT TRUE,
+        notifications_isha BOOLEAN DEFAULT TRUE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Migration: add new notification columns if they don't exist
+    await client.query(`
+      ALTER TABLE user_settings
+        ADD COLUMN IF NOT EXISTS notifications_dhuhr BOOLEAN DEFAULT TRUE,
+        ADD COLUMN IF NOT EXISTS notifications_maghrib BOOLEAN DEFAULT TRUE,
+        ADD COLUMN IF NOT EXISTS notifications_isha BOOLEAN DEFAULT TRUE;
     `);
 
     // Create user bookmarks table
@@ -230,7 +241,7 @@ app.get("/api/sync/settings/:userId", async (req, res) => {
 
   try {
     const settingsResult = await pool.query(
-      "SELECT dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_asr FROM user_settings WHERE user_id = $1",
+      "SELECT dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_dhuhr, notifications_asr, notifications_maghrib, notifications_isha FROM user_settings WHERE user_id = $1",
       [userId]
     );
 
@@ -242,7 +253,10 @@ app.get("/api/sync/settings/:userId", async (req, res) => {
         font_size_scale: "standard",
         theme_accent: "blue",
         notifications_fajr: true,
-        notifications_asr: true
+        notifications_dhuhr: true,
+        notifications_asr: true,
+        notifications_maghrib: true,
+        notifications_isha: true
       });
     }
 
@@ -256,7 +270,7 @@ app.get("/api/sync/settings/:userId", async (req, res) => {
 // 4. Update Settings
 app.post("/api/sync/settings/:userId", async (req, res) => {
   const userId = parseInt(req.params.userId);
-  const { dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_asr } = req.body;
+  const { dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_dhuhr, notifications_asr, notifications_maghrib, notifications_isha } = req.body;
   
   if (isNaN(userId)) {
     return res.status(400).json({ error: "Invalid user ID" });
@@ -264,17 +278,20 @@ app.post("/api/sync/settings/:userId", async (req, res) => {
 
   try {
     await pool.query(
-      `INSERT INTO user_settings (user_id, dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_asr, updated_at) 
-       VALUES ($1, $2, $3, $4, $5, $6, NOW()) 
+      `INSERT INTO user_settings (user_id, dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_dhuhr, notifications_asr, notifications_maghrib, notifications_isha, updated_at) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) 
        ON CONFLICT (user_id) 
        DO UPDATE SET 
          dark_mode = EXCLUDED.dark_mode, 
          font_size_scale = EXCLUDED.font_size_scale, 
          theme_accent = EXCLUDED.theme_accent, 
-         notifications_fajr = EXCLUDED.notifications_fajr, 
+         notifications_fajr = EXCLUDED.notifications_fajr,
+         notifications_dhuhr = EXCLUDED.notifications_dhuhr,
          notifications_asr = EXCLUDED.notifications_asr,
+         notifications_maghrib = EXCLUDED.notifications_maghrib,
+         notifications_isha = EXCLUDED.notifications_isha,
          updated_at = NOW()`,
-      [userId, dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_asr]
+      [userId, dark_mode, font_size_scale, theme_accent, notifications_fajr, notifications_dhuhr ?? true, notifications_asr, notifications_maghrib ?? true, notifications_isha ?? true]
     );
 
     res.status(200).json({ message: "Settings synced successfully" });
