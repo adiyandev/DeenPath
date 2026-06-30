@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { hapticLight, hapticMedium } from '../utils/haptics';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -73,7 +75,7 @@ export default function Settings({
     }
   };
 
-  const handleAlertToggle = (key: string) => {
+  const handleAlertToggle = async (key: string) => {
     hapticLight();
     const updated = { ...notifications, [key]: !notifications[key] };
     setNotifications(updated);
@@ -82,8 +84,15 @@ export default function Settings({
       triggerAutoSyncSettings(userName, updated);
     }
 
-    if (updated[key] && 'Notification' in window && Notification.permission !== 'granted') {
-      Notification.requestPermission();
+    if (updated[key]) {
+      if (Capacitor.isNativePlatform()) {
+        const permStatus = await LocalNotifications.checkPermissions();
+        if (permStatus.display !== 'granted') {
+          await LocalNotifications.requestPermissions();
+        }
+      } else if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission();
+      }
     }
   };
 

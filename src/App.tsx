@@ -4,6 +4,8 @@ import { PrayerData, Bookmark as BookmarkType } from './types';
 import { fetchUserLocation, fetchPrayerTimes } from './services/api';
 import { useTranslation } from './utils/i18n';
 import { hapticHeavy } from './utils/haptics';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
@@ -137,7 +139,18 @@ export default function App() {
             hapticHeavy();
             
             // Show standard browser notification if possible
-            if ('Notification' in window && Notification.permission === 'granted') {
+            if (Capacitor.isNativePlatform()) {
+              LocalNotifications.schedule({
+                notifications: [
+                  {
+                    title: `Time for ${currentPrayer.name} Prayer`,
+                    body: `It is now ${timeStr}. Time to pray.`,
+                    id: Math.floor(new Date().getTime() / 1000),
+                    schedule: { at: new Date(Date.now() + 1000) }
+                  }
+                ]
+              });
+            } else if ('Notification' in window && Notification.permission === 'granted') {
               new Notification(`Time for ${currentPrayer.name} Prayer`, {
                 body: `It is now ${timeStr}. Time to pray.`,
                 icon: '/icon.png' // assuming icon exists
