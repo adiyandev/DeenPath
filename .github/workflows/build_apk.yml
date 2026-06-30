@@ -57,6 +57,7 @@ jobs:
       - name: Build APK and AAB
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug bundleDebug
       - name: Upload APK to Release
         uses: softprops/action-gh-release@v2
