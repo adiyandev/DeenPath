@@ -29,8 +29,8 @@ export default function Onboarding({ onSuccess, onDevMode }: OnboardingProps) {
   const [mockOtpMsg, setMockOtpMsg] = useState('');
 
   const translations = [
-    { id: '131', name: 'English (Clear Quran)' },
-    { id: '97', name: 'Urdu (Taqi Usmani)' },
+    { id: '85', name: 'English (Clear Quran)' },
+    { id: '84', name: 'Urdu (Taqi Usmani)' },
     { id: '31', name: 'French (Muhammad Hamidullah)' },
     { id: '33', name: 'Indonesian (Ministry of Religious Affairs)' },
     { id: '83', name: 'Spanish (Muhammad Isa García)' },

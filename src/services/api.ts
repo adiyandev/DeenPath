@@ -154,27 +154,21 @@ export async function fetchSurahDetail(surahNumber: number): Promise<{ surah: Su
 
   // If the surah is offline-cached, we can fall back to it immediately if the API fails, or just return it for instant offline support
   try {
-    const translationIdStr = typeof window !== 'undefined' ? window.localStorage.getItem('quran_translation_id') || '131' : '131';
+    const translationIdStr = typeof window !== 'undefined' ? window.localStorage.getItem('quran_translation_id') || '85' : '85';
     const translationId = parseInt(translationIdStr, 10);
     
-    // 1. Fetch Arabic verses
-    const arabicRes = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${surahNumber}`);
-    if (!arabicRes.ok) throw new Error('Failed to fetch Arabic verses');
-    const arabicData = await arabicRes.json();
+    // Fetch combined verses and translations (per_page=300 gets all verses for any surah)
+    const res = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=en&words=false&translations=${translationId}&fields=text_uthmani&per_page=300`);
+    if (!res.ok) throw new Error('Failed to fetch surah details');
+    const data = await res.json();
     
-    // 2. Fetch English translation (ID 131 is Clear Quran by Dr. Mustafa Khattab, or ID 22 Sahih International)
-    const transRes = await fetch(`https://api.quran.com/api/v4/quran/translations/${translationId}?chapter_number=${surahNumber}`);
-    if (!transRes.ok) throw new Error('Failed to fetch translation');
-    const transData = await transRes.json();
-    
-    if (arabicData.verses && transData.translations) {
-      const ayahs: Ayah[] = arabicData.verses.map((v: any, index: number) => {
-        const translationObj = transData.translations.find((t: any) => t.resource_id === translationId && t.verse_id === v.id) || transData.translations[index];
-        // Clean HTML tags from the translation text if any exist
+    if (data.verses) {
+      const ayahs: Ayah[] = data.verses.map((v: any) => {
+        const translationObj = v.translations && v.translations.length > 0 ? v.translations[0] : null;
         const cleanedTranslation = translationObj ? translationObj.text.replace(/<[^>]*>/g, '') : '';
         return {
           number: v.id,
-          numberInSurah: parseInt(v.verse_key.split(':')[1]),
+          numberInSurah: v.verse_number,
           text: v.text_uthmani,
           translation: cleanedTranslation,
           juz: v.juz_number

@@ -522,7 +522,7 @@ export default function Settings({
           <div>
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Quran Translation Edition</label>
             <select
-              value={window.localStorage.getItem('quran_translation_id') || '131'}
+              value={window.localStorage.getItem('quran_translation_id') || '85'}
               onChange={(e) => {
                 hapticLight();
                 window.localStorage.setItem('quran_translation_id', e.target.value);
@@ -530,8 +530,8 @@ export default function Settings({
               }}
               className="w-full px-4 py-3 text-sm rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200/50 dark:border-zinc-800/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary text-slate-800 dark:text-zinc-100 transition-all"
             >
-              <option value="131">English (Clear Quran)</option>
-              <option value="97">Urdu (Taqi Usmani)</option>
+              <option value="85">English (Clear Quran)</option>
+              <option value="84">Urdu (Taqi Usmani)</option>
               <option value="31">French (Muhammad Hamidullah)</option>
               <option value="33">Indonesian (Ministry of Religious Affairs)</option>
               <option value="83">Spanish (Muhammad Isa García)</option>

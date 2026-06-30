@@ -141,18 +141,20 @@ export default function Quran({ bookmarks, toggleBookmark, selectedSurah, setSel
   const playAyahAudio = (ayahNumInSurah: number) => {
     if (!selectedSurah) return;
 
-    // Stop current audio if playing
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-
     const surahStr = String(selectedSurah).padStart(3, '0');
     const ayahStr = String(ayahNumInSurah).padStart(3, '0');
     // Using dynamic high-quality recitations from everyayah.com
     const audioUrl = `https://everyayah.com/data/${selectedReciter}/${surahStr}${ayahStr}.mp3`;
 
-    const audio = new Audio(audioUrl);
-    audioRef.current = audio;
+    let audio = audioRef.current;
+    if (!audio) {
+      audio = new Audio();
+      audioRef.current = audio;
+    } else {
+      audio.pause();
+    }
+    
+    audio.src = audioUrl;
     setPlayingAyahNumber(ayahNumInSurah);
     setAudioState('playing');
 
@@ -164,13 +166,23 @@ export default function Quran({ bookmarks, toggleBookmark, selectedSurah, setSel
 
     // Auto-advance or stop when audio ends
     audio.onended = () => {
-      const nextAyah = ayahs.find(a => a.numberInSurah === ayahNumInSurah + 1);
-      if (nextAyah) {
-        playAyahAudio(nextAyah.numberInSurah);
-      } else {
-        setPlayingAyahNumber(null);
-        setAudioState('idle');
-      }
+      // Re-query ayahs from state since closure might be stale (React setState dependency)
+      // Actually, ayahs is stable for the surah, but let's use a function to be safe if it were to change
+      setPlayingAyahNumber((currentPlaying) => {
+        if (currentPlaying === null) return null;
+        
+        // Find next ayah using the current ayahs array from the component scope
+        // Note: ayahs is set once on mount of surah detail, so the closure value is accurate.
+        const nextAyah = ayahs.find(a => a.numberInSurah === currentPlaying + 1);
+        if (nextAyah) {
+          // Defer to next tick to allow state updates to settle before playing next
+          setTimeout(() => playAyahAudio(nextAyah.numberInSurah), 50);
+          return currentPlaying; // Keep current until next starts, or just let playAyahAudio update it
+        } else {
+          setAudioState('idle');
+          return null;
+        }
+      });
     };
   };
 
